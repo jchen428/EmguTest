@@ -1,0 +1,9 @@
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\bin\Debug\CameraCapture.exe.config
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\bin\Debug\CameraCapture.exe
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\bin\Debug\CameraCapture.pdb
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.CameraCapture.resources
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.Properties.Resources.resources
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.csproj.GenerateResource.Cache
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.exe
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.pdb
+d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.csprojResolveAssemblyReference.cache

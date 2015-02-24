@@ -1,0 +1,8 @@
+d:\users\jesse\documents\visual studio 2013\Projects\EmguTest\EmguTest\bin\Debug\EmguTest.exe.config
+d:\users\jesse\documents\visual studio 2013\Projects\EmguTest\EmguTest\bin\Debug\EmguTest.exe
+d:\users\jesse\documents\visual studio 2013\Projects\EmguTest\EmguTest\bin\Debug\EmguTest.pdb
+d:\users\jesse\documents\visual studio 2013\Projects\EmguTest\EmguTest\obj\Debug\EmguTest.csprojResolveAssemblyReference.cache
+d:\users\jesse\documents\visual studio 2013\Projects\EmguTest\EmguTest\obj\Debug\EmguTest.Properties.Resources.resources
+d:\users\jesse\documents\visual studio 2013\Projects\EmguTest\EmguTest\obj\Debug\EmguTest.csproj.GenerateResource.Cache
+d:\users\jesse\documents\visual studio 2013\Projects\EmguTest\EmguTest\obj\Debug\EmguTest.exe
+d:\users\jesse\documents\visual studio 2013\Projects\EmguTest\EmguTest\obj\Debug\EmguTest.pdb
