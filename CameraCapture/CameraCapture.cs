@@ -29,10 +29,60 @@ namespace CameraCapture
          * Creates an EmguCV Image, captures a frame from camera and 
          * allocates it to the imageFrame, and displays it in ImageBox
          */
-        private void ProcessFrame(object sender, EventArgs arg)
+        private void processFrame(object sender, EventArgs arg)
         {
             Image<Bgr, Byte> imageFrame = capture.QueryFrame();
-            CamImageBox.Image = imageFrame;
+            Image<Gray, Byte> gray = imageFrame.Convert<Gray, Byte>().PyrDown().PyrUp();
+
+            gray = getColorRegions(imageFrame, new Bgr(33, 65, 85), new Bgr(80, 119, 140));
+            imageFrame = getCircles(gray);
+            camImageBox.Image = imageFrame;
+        }
+
+        /**
+         * Find regions with color values between lower and upper Bgr bounds
+         */
+        private Image<Gray, Byte> getColorRegions(Image<Bgr, Byte> img, Bgr lower, Bgr upper)
+        {
+            Image<Gray, Byte> blobs = img.InRange(lower, upper);
+
+            return blobs;
+        }
+
+        /**
+         * Find circles from a Bgr Image
+         */
+        private Image<Bgr, Byte> getCircles(Image<Bgr, Byte> img)
+        {
+            Image<Gray, Byte> gray = img.Convert<Gray, Byte>().PyrDown().PyrUp();
+            Gray cannyThreshold = new Gray(180);
+            Gray circleAccumulatorThreshold = new Gray(120);
+            CircleF[] circles = gray.HoughCircles(cannyThreshold, circleAccumulatorThreshold, 2, 50, 5, 100)[0];
+
+            foreach (CircleF circle in circles)
+            {
+                img.Draw(circle, new Bgr(Color.Red), 2);
+            }
+
+            return img;
+        }
+
+        /**
+         * Find circles from a Gray image
+         */
+        private Image<Bgr, Byte> getCircles(Image<Gray, Byte> img)
+        {
+            Image<Bgr, Byte> color = img.Convert<Bgr, Byte>().PyrDown().PyrUp();
+            Gray cannyThreshold = new Gray(180);
+            Gray circleAccumulatorThreshold = new Gray(120);
+            CircleF[] circles = img.HoughCircles(cannyThreshold, circleAccumulatorThreshold, 3, 25, 5, 100)[0];
+
+            foreach (CircleF circle in circles)
+            {
+                color.Draw(circle, new Bgr(Color.Red), 2);
+            }
+
+            return color;
         }
 
         /**
@@ -59,19 +109,19 @@ namespace CameraCapture
                 if (captureInProgress)      //Stop capture and reset btnStart text to "Start"
                 {
                     btnStart.Text = "Start";
-                    Application.Idle -= ProcessFrame;
+                    Application.Idle -= processFrame;
                 }
                 else                        //Start capture and set btnStart text to "Stop"
                 {
                     btnStart.Text = "Stop";
-                    Application.Idle += ProcessFrame;
+                    Application.Idle += processFrame;
                 }
 
                 captureInProgress = !captureInProgress;     //Invert captureInProgress
             }
         }
 
-        private void ReleaseData()
+        private void releaseData()
         {
             if (capture != null)
             {

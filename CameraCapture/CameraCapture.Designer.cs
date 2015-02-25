@@ -29,19 +29,19 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.CamImageBox = new Emgu.CV.UI.ImageBox();
+            this.camImageBox = new Emgu.CV.UI.ImageBox();
             this.btnStart = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.CamImageBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.camImageBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // CamImageBox
+            // camImageBox
             // 
-            this.CamImageBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.CamImageBox.Location = new System.Drawing.Point(12, 12);
-            this.CamImageBox.Name = "CamImageBox";
-            this.CamImageBox.Size = new System.Drawing.Size(640, 480);
-            this.CamImageBox.TabIndex = 2;
-            this.CamImageBox.TabStop = false;
+            this.camImageBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.camImageBox.Location = new System.Drawing.Point(12, 12);
+            this.camImageBox.Name = "camImageBox";
+            this.camImageBox.Size = new System.Drawing.Size(640, 480);
+            this.camImageBox.TabIndex = 2;
+            this.camImageBox.TabStop = false;
             // 
             // btnStart
             // 
@@ -60,17 +60,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(664, 530);
             this.Controls.Add(this.btnStart);
-            this.Controls.Add(this.CamImageBox);
+            this.Controls.Add(this.camImageBox);
             this.Name = "CameraCapture";
             this.Text = "Camera Output";
-            ((System.ComponentModel.ISupportInitialize)(this.CamImageBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.camImageBox)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private Emgu.CV.UI.ImageBox CamImageBox;
+        private Emgu.CV.UI.ImageBox camImageBox;
         private System.Windows.Forms.Button btnStart;
     }
 }
