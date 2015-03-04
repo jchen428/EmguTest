@@ -12,6 +12,8 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Emgu.Util;
 
+//using DirectShowLib;
+
 namespace CameraCapture
 {
     public partial class CameraCapture : Form
@@ -19,7 +21,8 @@ namespace CameraCapture
         //Declare global variables
         private Capture capture;        //Takes images from camera as frames
         private bool captureInProgress;
-
+        private Image<Bgr, Byte> frame;
+        
         public CameraCapture()
         {
             InitializeComponent();
@@ -31,12 +34,12 @@ namespace CameraCapture
          */
         private void processFrame(object sender, EventArgs arg)
         {
-            Image<Bgr, Byte> imageFrame = capture.QueryFrame();
-            Image<Gray, Byte> gray = imageFrame.Convert<Gray, Byte>().PyrDown().PyrUp();
+            frame = capture.QueryFrame();
+            Image<Gray, Byte> gray = frame.Convert<Gray, Byte>().PyrDown().PyrUp();
 
-            gray = getColorRegions(imageFrame, new Bgr(33, 65, 85), new Bgr(80, 119, 140));
-            imageFrame = getCircles(gray);
-            camImageBox.Image = imageFrame;
+            gray = getColorRegions(frame, new Bgr(0, 116, 167), new Bgr(91, 222, 251));
+            frame = getCircles(gray);
+            camImageBox.Image = frame;
         }
 
         /**
@@ -55,34 +58,37 @@ namespace CameraCapture
         private Image<Bgr, Byte> getCircles(Image<Bgr, Byte> img)
         {
             Image<Gray, Byte> gray = img.Convert<Gray, Byte>().PyrDown().PyrUp();
-            Gray cannyThreshold = new Gray(180);
-            Gray circleAccumulatorThreshold = new Gray(120);
-            CircleF[] circles = gray.HoughCircles(cannyThreshold, circleAccumulatorThreshold, 2, 50, 5, 100)[0];
+
+            double cannyThreshold = 180.0;
+            double circleAccumulatorThreshold = 50;
+
+            CircleF[] circles = gray.HoughCircles(new Gray(cannyThreshold), new Gray(circleAccumulatorThreshold), 2.5, 50, 5, 0)[0];
 
             foreach (CircleF circle in circles)
             {
-                img.Draw(circle, new Bgr(Color.Red), 2);
+                frame.Draw(circle, new Bgr(Color.Red), 2);
             }
 
-            return img;
+            return frame;
         }
 
         /**
          * Find circles from a Gray image
          */
-        private Image<Bgr, Byte> getCircles(Image<Gray, Byte> img)
+        private Image<Bgr, Byte> getCircles(Image<Gray, Byte> gray)
         {
-            Image<Bgr, Byte> color = img.Convert<Bgr, Byte>().PyrDown().PyrUp();
-            Gray cannyThreshold = new Gray(180);
-            Gray circleAccumulatorThreshold = new Gray(120);
-            CircleF[] circles = img.HoughCircles(cannyThreshold, circleAccumulatorThreshold, 3, 25, 5, 100)[0];
+            Image<Bgr, Byte> bgrCopy = gray.Convert<Bgr, Byte>().PyrDown().PyrUp();
+            double cannyThreshold = 180.0;
+            double circleAccumulatorThreshold = 50;
+
+            CircleF[] circles = gray.HoughCircles(new Gray(cannyThreshold), new Gray(circleAccumulatorThreshold), 2.5, 50, 5, 0)[0];
 
             foreach (CircleF circle in circles)
             {
-                color.Draw(circle, new Bgr(Color.Red), 2);
+                bgrCopy.Draw(circle, new Bgr(Color.Red), 2);
             }
 
-            return color;
+            return bgrCopy;
         }
 
         /**

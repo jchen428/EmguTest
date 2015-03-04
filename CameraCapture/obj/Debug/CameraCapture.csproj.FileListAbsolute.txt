@@ -7,3 +7,4 @@ d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\
 d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.exe
 d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.pdb
 d:\Users\Jesse\documents\visual studio 2013\Projects\EmguTest\CameraCapture\obj\Debug\CameraCapture.csprojResolveAssemblyReference.cache
+D:\Users\Jesse\Documents\Visual Studio 2013\Projects\EmguTest\CameraCapture\bin\Debug\DirectShowLib-2005.dll
