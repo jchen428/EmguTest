@@ -37,32 +37,34 @@ namespace CameraCapture
             frame = capture.QueryFrame();
             Image<Gray, Byte> gray = frame.Convert<Gray, Byte>().PyrDown().PyrUp();
 
-            gray = getColorRegions(frame, new Bgr(0, 116, 167), new Bgr(91, 222, 251));
-            frame = getCircles(gray);
-            camImageBox.Image = frame;
+            //gray = filterColor(frame, new Bgr(0, 116, 167), new Bgr(91, 222, 251));
+            //frame = getCircles(gray);
+            //frame = getCorners(gray).Convert<Bgr, Byte>().PyrDown().PyrUp();
+
+            camImageBox.Image = getCorners(gray);
         }
 
         /**
          * Find regions with color values between lower and upper Bgr bounds
          */
-        private Image<Gray, Byte> getColorRegions(Image<Bgr, Byte> img, Bgr lower, Bgr upper)
+        private Image<Gray, Byte> filterColor(Image<Bgr, Byte> img, Bgr lower, Bgr upper)
         {
-            Image<Gray, Byte> blobs = img.InRange(lower, upper);
+            Image<Gray, Byte> regions = img.InRange(lower, upper);
 
-            return blobs;
+            return regions;
         }
-
+        
         /**
          * Find circles from a Bgr Image
          */
-        private Image<Bgr, Byte> getCircles(Image<Bgr, Byte> img)
+        /*private Image<Bgr, Byte> getCircles(Image<Bgr, Byte> img)
         {
             Image<Gray, Byte> gray = img.Convert<Gray, Byte>().PyrDown().PyrUp();
 
             double cannyThreshold = 180.0;
             double circleAccumulatorThreshold = 50;
 
-            CircleF[] circles = gray.HoughCircles(new Gray(cannyThreshold), new Gray(circleAccumulatorThreshold), 2.5, 50, 5, 0)[0];
+            CircleF[] circles = gray.HoughCircles(new Gray(cannyThreshold), new Gray(circleAccumulatorThreshold), 2.5, 50, 25, 150)[0];
 
             foreach (CircleF circle in circles)
             {
@@ -70,7 +72,7 @@ namespace CameraCapture
             }
 
             return frame;
-        }
+        }*/
 
         /**
          * Find circles from a Gray image
@@ -81,7 +83,7 @@ namespace CameraCapture
             double cannyThreshold = 180.0;
             double circleAccumulatorThreshold = 50;
 
-            CircleF[] circles = gray.HoughCircles(new Gray(cannyThreshold), new Gray(circleAccumulatorThreshold), 2.5, 50, 5, 0)[0];
+            CircleF[] circles = gray.HoughCircles(new Gray(cannyThreshold), new Gray(circleAccumulatorThreshold), 2.5, 50, 25, 150)[0];
 
             foreach (CircleF circle in circles)
             {
@@ -89,6 +91,22 @@ namespace CameraCapture
             }
 
             return bgrCopy;
+        }
+
+        private Image<Gray, Byte> getCorners(Image<Gray, Byte> gray)
+        {
+            Image<Gray, float> rawCorners = null;   //Raw corner strength image (must be 32-bit float)
+            Image<Gray, Byte> dispCorners = null;   //Inverted threshold corner strengths (for display)
+
+            //Create raw corner strength image and do Harris algorithm
+            rawCorners = new Image<Gray, float>(gray.Size);
+            CvInvoke.cvCornerHarris(gray, rawCorners, 3, 3, 0.01);
+
+            //Create and return inverted threshold image
+            dispCorners = new Image<Gray, Byte>(gray.Size);
+            CvInvoke.cvThreshold(rawCorners, dispCorners, 0.0001, 255, Emgu.CV.CvEnum.THRESH.CV_THRESH_BINARY);
+
+            return dispCorners;
         }
 
         /**
