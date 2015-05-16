@@ -35,13 +35,15 @@ namespace CameraCapture
         private void processFrame(object sender, EventArgs arg)
         {
             frame = capture.QueryFrame();
+            rawImageBox.Image = frame;
+
             Image<Gray, Byte> gray = frame.Convert<Gray, Byte>().PyrDown().PyrUp();
 
-            //gray = filterColor(frame, new Bgr(0, 116, 167), new Bgr(91, 222, 251));
-            //frame = getCircles(gray);
+            gray = filterColor(frame, new Bgr(0, 116, 167), new Bgr(91, 222, 251));
+            frame = getCircles(gray);
             //frame = getCorners(gray).Convert<Bgr, Byte>().PyrDown().PyrUp();
 
-            camImageBox.Image = getCorners(gray);
+            processedImageBox.Image = frame;
         }
 
         /**
@@ -93,6 +95,9 @@ namespace CameraCapture
             return bgrCopy;
         }
 
+        /**
+         * May be deprecated
+         */
         private Image<Gray, Byte> getCorners(Image<Gray, Byte> gray)
         {
             Image<Gray, float> rawCorners = null;   //Raw corner strength image (must be 32-bit float)
