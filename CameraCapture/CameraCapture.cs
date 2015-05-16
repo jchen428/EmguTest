@@ -29,8 +29,74 @@ namespace CameraCapture
         }
 
         /**
-         * Creates an EmguCV Image, captures a frame from camera and 
-         * allocates it to the imageFrame, and displays it in ImageBox
+         * Toggles captureInProgress and starts/stops capture
+         */
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            #region Instantiate new Capture if one doesn't already exist
+            if (capture == null)
+            {
+                try
+                {
+                    capture = new Capture();
+                }
+                catch (NullReferenceException ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            #endregion
+
+            if (capture != null)
+            {
+                if (captureInProgress)      //Stop capture and reset btnStart text to "Start"
+                {
+                    btnStart.Text = "Start";
+                    Application.Idle -= processFrame;
+                }
+                else                        //Start capture and set btnStart text to "Stop"
+                {
+                    btnStart.Text = "Stop";
+                    Application.Idle += processFrame;
+                }
+
+                captureInProgress = !captureInProgress;     //Invert captureInProgress
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (fileNameTextBox.Text != String.Empty)
+            {
+                Image<Bgr, Byte> img = 
+                   new Image<Bgr, byte>(fileNameTextBox.Text)
+                   .Resize(640, 480, Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR, true);
+
+                rawImageBox.Image = img;
+                processedImageBox.Image = getContours(img);
+            }
+        }
+
+        private void loadImageButton_Click(object sender, EventArgs e)
+        {
+            DialogResult result = openFileDialog1.ShowDialog();
+            if (result == DialogResult.OK || result == DialogResult.Yes)
+            {
+                fileNameTextBox.Text = openFileDialog1.FileName;
+            }
+        }
+
+        private void releaseData()
+        {
+            if (capture != null)
+            {
+                capture.Dispose();
+            }
+        }
+
+        /**
+         * Creates an Image, captures a frame from camera and displays it 
+         * rawImageBox,and processes and displays the Image in processedImageBox
          */
         private void processFrame(object sender, EventArgs arg)
         {
@@ -39,11 +105,11 @@ namespace CameraCapture
 
             Image<Gray, Byte> gray = frame.Convert<Gray, Byte>().PyrDown().PyrUp();
 
-            gray = filterColor(frame, new Bgr(0, 116, 167), new Bgr(91, 222, 251));
-            frame = getCircles(gray);
-            //frame = getCorners(gray).Convert<Bgr, Byte>().PyrDown().PyrUp();
+            //gray = filterColor(frame, new Bgr(0, 116, 167), new Bgr(91, 222, 251));
+            //frame = getCircles(gray);
+            ////frame = getCorners(gray).Convert<Bgr, Byte>().PyrDown().PyrUp();
 
-            processedImageBox.Image = frame;
+            processedImageBox.Image = getContours(frame);
         }
 
         /**
@@ -115,47 +181,30 @@ namespace CameraCapture
         }
 
         /**
-         * Toggles captureInProgress and starts/stops capture
+         * ADUST THE THRESHOLD VALUE
          */
-        private void btnStart_Click(object sender, EventArgs e)
+        private Image<Bgr, Byte> getContours(Image<Bgr, Byte> color)
         {
-            #region Instantiate new Capture if one doesn't already exist
-            if (capture == null)
+            int thresholdValue = 100;
+            Image<Gray, Byte> gray = color.Convert<Gray, Byte>().PyrDown().PyrUp();
+            gray = gray.ThresholdBinary(new Gray(thresholdValue), new Gray(255));
+
+            using (MemStorage storage = new MemStorage())
             {
-                try
+                for (Contour<Point> contours = gray.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE, Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_TREE, storage);
+                    contours != null; contours = contours.HNext)
                 {
-                    capture = new Capture();
-                }
-                catch (NullReferenceException ex)
-                {
-                    MessageBox.Show(ex.Message);
+                    Contour<Point> curr = contours.ApproxPoly(contours.Perimeter * 0.015, storage);
+
+                    if (curr.BoundingRectangle.Width > 20)
+                    {
+                        CvInvoke.cvDrawContours(color, contours, new MCvScalar(255), new MCvScalar(255), -1, 2, Emgu.CV.CvEnum.LINE_TYPE.EIGHT_CONNECTED, new Point(0, 0));
+                        color.Draw(curr.BoundingRectangle, new Bgr(0, 0, 255), 1);
+                    }
                 }
             }
-            #endregion
 
-            if (capture != null)
-            {
-                if (captureInProgress)      //Stop capture and reset btnStart text to "Start"
-                {
-                    btnStart.Text = "Start";
-                    Application.Idle -= processFrame;
-                }
-                else                        //Start capture and set btnStart text to "Stop"
-                {
-                    btnStart.Text = "Stop";
-                    Application.Idle += processFrame;
-                }
-
-                captureInProgress = !captureInProgress;     //Invert captureInProgress
-            }
-        }
-
-        private void releaseData()
-        {
-            if (capture != null)
-            {
-                capture.Dispose();
-            }
+            return color;
         }
     }
 }
