@@ -68,9 +68,9 @@ namespace CameraCapture
         {
             if (fileNameTextBox.Text != String.Empty)
             {
-                Image<Bgr, Byte> img = 
+                Image<Bgr, Byte> img =      //Resize the image to a more manageable size. Also reduces noise
                    new Image<Bgr, byte>(fileNameTextBox.Text)
-                   .Resize(640, 480, Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR, true);
+                   .Resize(80, 60, Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR, true);    //8x smaller
 
                 rawImageBox.Image = img;
                 processedImageBox.Image = getContours(img);
@@ -181,11 +181,11 @@ namespace CameraCapture
         }
 
         /**
-         * ADUST THE THRESHOLD VALUE
+         * ADUST THE THRESHOLD VALUE - nvm
          */
         private Image<Bgr, Byte> getContours(Image<Bgr, Byte> color)
         {
-            int thresholdValue = 100;
+            int thresholdValue = 25;
             Image<Gray, Byte> gray = color.Convert<Gray, Byte>().PyrDown().PyrUp();
             gray = gray.ThresholdBinary(new Gray(thresholdValue), new Gray(255));
 
@@ -199,7 +199,7 @@ namespace CameraCapture
                     if (curr.BoundingRectangle.Width > 20)
                     {
                         CvInvoke.cvDrawContours(color, contours, new MCvScalar(255), new MCvScalar(255), -1, 2, Emgu.CV.CvEnum.LINE_TYPE.EIGHT_CONNECTED, new Point(0, 0));
-                        color.Draw(curr.BoundingRectangle, new Bgr(0, 0, 255), 1);
+                        color.Draw(curr.BoundingRectangle, new Bgr(0, 255, 0), 1);
                     }
                 }
             }
