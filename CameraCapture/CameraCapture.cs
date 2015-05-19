@@ -73,7 +73,7 @@ namespace CameraCapture
                    .Resize(80, 60, Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR, true);    //8x smaller
 
                 rawImageBox.Image = img;
-                processedImageBox.Image = getContours(img);
+                processedImageBox.Image = cropToContour(img);
             }
         }
 
@@ -109,7 +109,7 @@ namespace CameraCapture
             //frame = getCircles(gray);
             ////frame = getCorners(gray).Convert<Bgr, Byte>().PyrDown().PyrUp();
 
-            processedImageBox.Image = getContours(frame);
+            processedImageBox.Image = cropToContour(frame);
         }
 
         /**
@@ -181,13 +181,15 @@ namespace CameraCapture
         }
 
         /**
-         * ADUST THE THRESHOLD VALUE - nvm
+         * TUNE THE THRESHOLD VALUE
          */
-        private Image<Bgr, Byte> getContours(Image<Bgr, Byte> color)
+        private Image<Bgr, Byte> cropToContour(Image<Bgr, Byte> color)
         {
-            int thresholdValue = 25;
+            //Find and draw contours/bounding box
+            int thresholdValue = 18;
             Image<Gray, Byte> gray = color.Convert<Gray, Byte>().PyrDown().PyrUp();
             gray = gray.ThresholdBinary(new Gray(thresholdValue), new Gray(255));
+            Rectangle bound = new Rectangle();
 
             using (MemStorage storage = new MemStorage())
             {
@@ -196,15 +198,18 @@ namespace CameraCapture
                 {
                     Contour<Point> curr = contours.ApproxPoly(contours.Perimeter * 0.015, storage);
 
-                    if (curr.BoundingRectangle.Width > 20)
-                    {
+                    //if (curr.BoundingRectangle.Width > 20)
+                    //{
+                        bound = curr.BoundingRectangle;
                         CvInvoke.cvDrawContours(color, contours, new MCvScalar(255), new MCvScalar(255), -1, 2, Emgu.CV.CvEnum.LINE_TYPE.EIGHT_CONNECTED, new Point(0, 0));
-                        color.Draw(curr.BoundingRectangle, new Bgr(0, 255, 0), 1);
-                    }
+                        color.Draw(bound, new Bgr(0, 255, 0), 1);
+                    //}
                 }
             }
 
-            return color;
+            Image<Bgr, Byte> cropped = color.Copy(bound);
+
+            return cropped;
         }
     }
 }
