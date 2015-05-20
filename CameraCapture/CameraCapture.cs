@@ -71,9 +71,11 @@ namespace CameraCapture
                 Image<Bgr, Byte> img =      //Resize the image to a more manageable size. Also reduces noise
                    new Image<Bgr, byte>(fileNameTextBox.Text)
                    .Resize(80, 60, Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR, true);    //8x smaller
-
                 rawImageBox.Image = img;
-                processedImageBox.Image = cropToContour(img);
+
+                Image<Bgr, Byte> cropped = cropToContour(img);
+                char c = charRec(cropped);
+                //processedImageBox.Image = cropped;
             }
         }
 
@@ -186,7 +188,7 @@ namespace CameraCapture
         private Image<Bgr, Byte> cropToContour(Image<Bgr, Byte> color)
         {
             //Find and draw contours/bounding box
-            int thresholdValue = 18;
+            int thresholdValue = 15;
             Image<Gray, Byte> gray = color.Convert<Gray, Byte>().PyrDown().PyrUp();
             gray = gray.ThresholdBinary(new Gray(thresholdValue), new Gray(255));
             Rectangle bound = new Rectangle();
@@ -201,15 +203,43 @@ namespace CameraCapture
                     //if (curr.BoundingRectangle.Width > 20)
                     //{
                         bound = curr.BoundingRectangle;
-                        CvInvoke.cvDrawContours(color, contours, new MCvScalar(255), new MCvScalar(255), -1, 2, Emgu.CV.CvEnum.LINE_TYPE.EIGHT_CONNECTED, new Point(0, 0));
+                        /*bound.X += (int) (bound.Width * 0.05);
+                        bound.Y += (int) (bound.Height * 0.05);
+                        bound.Width -= (int) (bound.Width * 0.1);
+                        bound.Height -= (int)(bound.Height * 0.1);*/
+                        //CvInvoke.cvDrawContours(color, contours, new MCvScalar(255), new MCvScalar(255), -1, 2, Emgu.CV.CvEnum.LINE_TYPE.EIGHT_CONNECTED, new Point(0, 0));
                         color.Draw(bound, new Bgr(0, 255, 0), 1);
                     //}
                 }
             }
 
-            Image<Bgr, Byte> cropped = color.Copy(bound);
+            color = color.Copy(bound);
+            //Image<Gray, Byte> cropped = color.Convert<Gray, Byte>().PyrDown().PyrUp();
 
-            return cropped;
+            return color;
+        }
+
+        private char charRec(Image<Bgr, Byte> img)
+        {
+            Image<Gray, Byte> three = new Image<Gray, Byte>("Samples/Ex3.png");
+            //Console.WriteLine(Environment.CurrentDirectory);
+
+            for (int i = 0; i < img.Height; i++)
+            {
+                for (int j = 0; j < img.Width; j++)
+                {
+                    if (img[i, j].Red > 150)
+                        img[i, j] = new Bgr(255, 255, 255);
+                    else
+                        img[i, j] = new Bgr(0, 0, 0);
+                }
+            }
+            //img.Convert<Gray, Byte>().PyrDown().PyrUp();
+            img = img.Resize(3, 5, Emgu.CV.CvEnum.INTER.CV_INTER_LINEAR);
+
+            processedImageBox.Image = img;
+
+            return '0';
         }
     }
 }
